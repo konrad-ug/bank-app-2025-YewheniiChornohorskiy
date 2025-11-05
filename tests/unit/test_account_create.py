@@ -42,3 +42,21 @@ class TestAccount:
         acc = Account()
         assert acc.balance == 0.0
         assert acc.fee == 0.0
+    def test_incoming_transfer_adds_to_history(self):
+        acc = Account()
+        acc.incoming_transfer(500)
+        assert acc.history == [500.0]
+        assert acc.balance == 500.0 
+    def test_outgoing_transfer_adds_to_history(self):
+        acc = Account()
+        acc.incoming_transfer(500)
+        acc.outgoing_transfer(300)
+        assert acc.history == [500.0, -300.0]
+        assert acc.balance == 200.0 
+    def test_express_transfer_adds_fee_to_history(self):
+        acc = Account()
+        acc.fee = 1
+        acc.incoming_transfer(500)
+        acc.outgoing_transfer(300, express=True)
+        assert acc.history == [500.0, -300.0, -1.0]
+        assert acc.balance == 199.0
