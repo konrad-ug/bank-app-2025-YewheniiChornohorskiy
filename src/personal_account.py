@@ -20,4 +20,20 @@ class Personal_Account(Account):
             year += 1900 
         else: 
             year += 2000
-        return current_year - year   
+        return current_year - year    
+    def submit_for_loan(self, amount):  
+        if len(self.history) >= 3: 
+            last_three = self.history[-3:]
+            if all(t > 0 for t in last_three):
+                self.balance += amount
+                self.history.append(float(amount))
+                return True
+ 
+        if len(self.history) >= 5:
+            last_five = self.history[-5:] 
+            if sum(last_five) > amount:
+                self.balance += amount
+                self.history.append(float(amount))
+                return True
+
+        return False

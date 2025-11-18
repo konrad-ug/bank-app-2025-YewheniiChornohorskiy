@@ -2,7 +2,7 @@ class Account:
     def __init__(self):
         self.balance = 0.0
         self.fee = 0.0
-        self.history = []  # nowy atrybut
+        self.history = []  
 
     def incoming_transfer(self, amount):
         self.balance += amount
