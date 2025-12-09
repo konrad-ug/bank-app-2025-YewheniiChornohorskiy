@@ -44,3 +44,5 @@ jobs:
     - name: Raport
       run: |
         python3 -m coverage report
+    - name: Stop API server
+      run: pkill -f "flask"
