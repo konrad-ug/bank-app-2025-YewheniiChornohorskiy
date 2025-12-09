@@ -1,21 +1,19 @@
-from typing import List, Optional
-from src.personal_account import Personal_Account
-
+ 
 class AccountsRegistry:
     def __init__(self):
-        self.accounts: List[Personal_Account] = []
+        self.accounts = []
 
-    def add_account(self, account: Personal_Account): 
+    def add_account(self, account): 
         self.accounts.append(account)
 
-    def find_account_by_pesel(self, pesel: str) -> Optional[Personal_Account]: 
+    def find_account_by_pesel(self, pesel): 
         for account in self.accounts:
             if account.pesel == pesel:
                 return account
         return None
 
-    def get_all_accounts(self) -> List[Personal_Account]: 
+    def get_all_accounts(self): 
         return self.accounts.copy()  
 
-    def get_accounts_count(self) -> int: 
+    def get_accounts_count(self): 
         return len(self.accounts)

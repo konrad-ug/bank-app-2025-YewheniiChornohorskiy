@@ -9,8 +9,7 @@ def firm_account_with_balance():
 def firm_account_with_zus():
     account = Firm_Account("Test Company", "1234567890")
     account.incoming_transfer(5000) 
-    account.balance -= 1775
-    account.history.append(-1775.0)
+    account.outgoing_transfer(1775)  
     return account
 
 class TestFirmLoan:
