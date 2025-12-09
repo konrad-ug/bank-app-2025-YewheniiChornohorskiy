@@ -27,6 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
+        pip install flask
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -40,7 +41,7 @@ jobs:
         sleep 3 
     - name: Test with pytest
       run: |
-        python3 -m coverage run --source=src -m pytest
+        python3 -m coverage run --source=src -m pytest 
     - name: Raport
       run: |
         python3 -m coverage report
