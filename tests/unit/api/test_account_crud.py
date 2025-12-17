@@ -108,7 +108,7 @@ class TestAccountCRUD:
         data = response.json()
         assert data["message"] == "Account updated"
         assert data["account"]["name"] == "Marek"
-        assert data["account"]["surname"] == sample_account_data["surname"]  # Nazwisko bez zmian
+        assert data["account"]["surname"] == sample_account_data["surname"] 
 
     def test_update_account_full(self, api_server, sample_account_data, cleanup_accounts): 
         requests.post(api_server, json=sample_account_data) 
@@ -119,7 +119,7 @@ class TestAccountCRUD:
         data = response.json()
         assert data["account"]["name"] == "Marek"
         assert data["account"]["surname"] == "Wiśniewski"
-        assert data["account"]["pesel"] == sample_account_data["pesel"]  # PESEL bez zmian
+        assert data["account"]["pesel"] == sample_account_data["pesel"] 
 
     def test_update_account_no_fields(self, api_server, sample_account_data, cleanup_accounts): 
         requests.post(api_server, json=sample_account_data) 
