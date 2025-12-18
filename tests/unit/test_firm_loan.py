@@ -1,16 +1,18 @@
 import pytest
 from src.firm_account import Firm_Account
+from unittest.mock import patch
+@pytest.fixture
+def firm_account_with_balance(): 
+    with patch.object(Firm_Account, 'validate_nip_with_mf', return_value=True):
+        return Firm_Account("Test Company", "1234567890")
 
 @pytest.fixture
-def firm_account_with_balance():
-    return Firm_Account("Test Company", "1234567890")
-
-@pytest.fixture
-def firm_account_with_zus():
-    account = Firm_Account("Test Company", "1234567890")
-    account.incoming_transfer(5000) 
-    account.outgoing_transfer(1775)  
-    return account
+def firm_account_with_zus(): 
+    with patch.object(Firm_Account, 'validate_nip_with_mf', return_value=True):
+        account = Firm_Account("Test Company", "1234567890")
+        account.incoming_transfer(5000) 
+        account.outgoing_transfer(1775)  
+        return account
 
 class TestFirmLoan:
     @pytest.mark.parametrize("balance, loan_amount, has_zus, expected_result", [ 
