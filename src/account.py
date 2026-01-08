@@ -16,6 +16,6 @@ class Account:
                 self.history.append(-float(self.fee))
             else:
                 self.balance -= amount
-                self.history.append(-float(amount))
+                self.history.append(-float(amount)) 
 
         
