@@ -38,7 +38,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Start API server in background
       run: |
-        docker compose -f mongo.yml up
+        docker compose -f mongo.yml up -d
         python -m flask --app app.api run &
         sleep 3 
     - name: Test with pytest
