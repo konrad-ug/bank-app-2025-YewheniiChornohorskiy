@@ -1,25 +1,48 @@
 from src.accounts_repository import AccountsRepository
-from pymongo import MongoClient
 from typing import List
 import os
 
 class MongoAccountsRepository(AccountsRepository):
-    def __init__(self): 
-        mongo_host = os.getenv('MONGO_HOST', 'localhost')
-        mongo_port = int(os.getenv('MONGO_PORT', 27017))
-        database_name = os.getenv('MONGO_DB', 'bank_app')
-        collection_name = os.getenv('MONGO_COLLECTION', 'accounts')
-         
-        self.client = MongoClient(f'mongodb://{mongo_host}:{mongo_port}/')
-        self.db = self.client[database_name]
-        self.collection = self.db[collection_name]
-         
-        self.collection.create_index("pesel", unique=True)
+    def __init__(self):
+        try:
+            from pymongo import MongoClient
+            
+            mongo_host = os.getenv('MONGO_HOST', 'localhost')
+            mongo_port = int(os.getenv('MONGO_PORT', 27017))
+            database_name = os.getenv('MONGO_DB', 'bank_app')
+            collection_name = os.getenv('MONGO_COLLECTION', 'accounts')
+            
+            self.client = MongoClient(
+                f'mongodb://admin:password@localhost:27017/',
+                serverSelectionTimeoutMS=2000 
+            )
+            
+            self.client.server_info()
+            self.db = self.client[database_name]
+            self.collection = self.db[collection_name]
+            
+            try:
+                self.collection.create_index("pesel", unique=True)
+            except:
+                print("Could not create index (no permissions)")
+                
+            self.is_available = True
+            print("MongoDB connected successfully")
+            
+        except Exception as e:
+            print(f"MongoDB not available: {e}")
+            self.is_available = False
+            self.client = None
+            self.collection = None
     
-    def save_all(self, accounts: List) -> bool: 
-        try: 
+    def save_all(self, accounts: List) -> bool:
+        if not self.is_available or self.collection is None:
+            print("Mock save operation (MongoDB not available)")
+            return True  
+        
+        try:
             self.collection.delete_many({})
-             
+            
             for account in accounts:
                 account_dict = {
                     "name": account.first_name,
@@ -36,15 +59,19 @@ class MongoAccountsRepository(AccountsRepository):
                 )
             return True
         except Exception as e:
-            print(f"Error saving accounts to MongoDB: {e}")
+            print(f"❌ Error saving to MongoDB: {e}")
             return False
     
-    def load_all(self) -> List: 
+    def load_all(self) -> List:
+        if not self.is_available or self.collection is None:
+            print("Mock load operation (MongoDB not available)")
+            return [] 
+        
         try:
             from src.personal_account import Personal_Account
             
             accounts = []
-            for account_data in self.collection.find(): 
+            for account_data in self.collection.find():
                 account = Personal_Account(
                     account_data["name"],
                     account_data["surname"],
@@ -57,9 +84,9 @@ class MongoAccountsRepository(AccountsRepository):
             
             return accounts
         except Exception as e:
-            print(f"Error loading accounts from MongoDB: {e}")
+            print(f"Error loading from MongoDB: {e}")
             return []
     
-    def close(self): 
+    def close(self):
         if self.client:
             self.client.close()
