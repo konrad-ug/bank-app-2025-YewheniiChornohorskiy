@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from src.accounts_registry import AccountsRegistry
 from src.personal_account import Personal_Account
+from src.mongo_accounts_repository import MongoAccountsRepository
 
 app = Flask(__name__)
 registry = AccountsRegistry()
+repository = MongoAccountsRepository()
 
 @app.route("/api/accounts", methods=['POST'])
 def create_account():
@@ -100,5 +102,38 @@ def delete_account(pesel):
     registry.accounts.remove(account) 
     return jsonify({"message": "Account deleted"}), 200
 
+@app.route("/api/accounts/save", methods=['POST'])
+def save_accounts_to_db(): 
+    try:
+        accounts = registry.get_all_accounts()
+        success = repository.save_all(accounts)
+        
+        if success:
+            return jsonify({
+                "message": f"Successfully saved {len(accounts)} accounts to database",
+                "count": len(accounts)
+            }), 200
+        else:
+            return jsonify({"error": "Failed to save accounts to database"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/accounts/load", methods=['POST'])
+def load_accounts_from_db(): 
+    try: 
+        registry.accounts.clear()
+         
+        accounts = repository.load_all()
+         
+        for account in accounts:
+            registry.add_account(account)
+        
+        return jsonify({
+            "message": f"Successfully loaded {len(accounts)} accounts from database",
+            "count": len(accounts)
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,3 +1,6 @@
 pytest==8.4.2
 coverage==6.5.0
-requests
+pytest-mock==3.11.1
+requests==2.31.0
+behave==1.2.6
+pymongo==4.5.0
