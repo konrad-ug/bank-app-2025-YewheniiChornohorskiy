@@ -13,16 +13,13 @@ def step_impl(context):
         requests.delete(URL + f"/api/accounts/{pesel}")
 
 @given('Acoount registry is empty')
-def step_impl(context): 
-    response = requests.get(URL + "/api/accounts")
-    accounts = response.json()
-    
-    for account in accounts:
-        pesel = account["pesel"]
-        requests.delete(URL + f"/api/accounts/{pesel}")
-
+def step_impl(context):
+    clear_account_registry(context)
+ 
+@given('I create an account using name: "{name}", last name: "{last_name}", pesel: "{pesel}"')
 @when('I create an account using name: "{name}", last name: "{last_name}", pesel: "{pesel}"')
-def step_impl(context, name, last_name, pesel):
+@step('I create an account using name: "{name}", last name: "{last_name}", pesel: "{pesel}"')
+def create_account(context, name, last_name, pesel):
     json_body = {
         "name": name,
         "surname": last_name,
@@ -73,19 +70,25 @@ def step_impl(context, pesel, field, value):
     field_mapping = {
         "name": "name",
         "surname": "surname",
-        "first_name": "name",
-        "last_name": "surname",
         "pesel": "pesel",
         "balance": "balance"
     }
     
     api_field = field_mapping.get(field, field)
-     
+    
     if api_field == "balance":
         actual_value = float(account_data[api_field])
         expected_value = float(value)
         assert abs(actual_value - expected_value) < 0.001, \
             f"Expected {field}={expected_value}, but got {actual_value}"
-    else: 
+    else:
         assert str(account_data[api_field]) == value, \
             f"Expected {field}='{value}', but got '{account_data[api_field]}'"
+ 
+def clear_account_registry(context):
+    response = requests.get(URL + "/api/accounts")
+    accounts = response.json()
+    
+    for account in accounts:
+        pesel = account["pesel"]
+        requests.delete(URL + f"/api/accounts/{pesel}")
