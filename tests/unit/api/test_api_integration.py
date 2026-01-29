@@ -11,9 +11,13 @@ def cleanup():
         accounts = response.json()
         for account in accounts:
             requests.delete(f"{BASE_URL}/{account['pesel']}")
-    
-    yield
      
+    try: 
+        requests.post(f"{BASE_URL}/save")
+    except:
+        pass
+    
+    yield 
     response = requests.get(BASE_URL)
     if response.status_code == 200:
         accounts = response.json()
