@@ -39,6 +39,7 @@ jobs:
     - name: Start API server in background
       run: |
         docker compose -f mongo.yml up -d
+        docker compose -f mongo.yml wait
         python -m flask --app app.api run &
         sleep 3 
     - name: Test with pytest
